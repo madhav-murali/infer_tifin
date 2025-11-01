@@ -259,14 +259,18 @@ curl -X POST "http://localhost:8080/chat/batched" \
 ```dockerfile
 FROM python:3.10-slim
 
-WORKDIR /home/user/app
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
 
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
-COPY app.py app.py
+COPY --chown=user ./requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
+COPY --chown=user . /app
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+
 ```
 
 ---
